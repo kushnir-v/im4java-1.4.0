@@ -24,6 +24,7 @@ package org.im4java.process;
 
 import java.io.*;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -327,7 +328,7 @@ public class ProcessStarter {
      */
 
     protected int run(LinkedList<String> pArgs)
-            throws IOException, InterruptedException, Exception {
+            throws Exception {
 
         // create and execute process (synchronous mode)
         if (!iAsyncMode) {
@@ -425,7 +426,12 @@ public class ProcessStarter {
             cmd = searchForCmd(cmd, iGlobalSearchPath);
             pArgs.set(0, cmd);
         }
+
         ProcessBuilder builder = new ProcessBuilder(pArgs);
+
+        Map<String, String> env = builder.environment();
+        env.put("PATH", getGlobalSearchPath());
+
         return builder.start();
     }
 
@@ -583,8 +589,8 @@ public class ProcessStarter {
     /////////////////////////////////////////////////////////////////////////////
 
     /**
-     Post-processing after the process has terminated with an 
-     exception. Subclasses might override this method to do some 
+     Post-processing after the process has terminated with an
+     exception. Subclasses might override this method to do some
      specific post-processing. This method is only called in
      asynchronous execution mode (in synchronous mode, the exception
      just propagates as usual to the caller).
@@ -611,7 +617,7 @@ public class ProcessStarter {
      */
 
     public String searchForCmd(String pCmd, String pPath)
-            throws IOException, FileNotFoundException {
+            throws IOException {
         // check is pCmd is absolute
         if ((new File(pCmd)).isAbsolute()) {
             return pCmd;
@@ -623,23 +629,23 @@ public class ProcessStarter {
         boolean isWindows = File.pathSeparator.equals(";");
 
         String dirs[] = pPath.split(File.pathSeparator);
-        for (int i = 0; i < dirs.length; ++i) {
+        for (String dir : dirs) {
             if (isWindows) {
                 // try thre typical extensions
-                File cmd = new File(dirs[i], pCmd + ".exe");
+                File cmd = new File(dir, pCmd + ".exe");
                 if (cmd.exists()) {
                     return cmd.getCanonicalPath();
                 }
-                cmd = new File(dirs[i], pCmd + ".cmd");
+                cmd = new File(dir, pCmd + ".cmd");
                 if (cmd.exists()) {
                     return cmd.getCanonicalPath();
                 }
-                cmd = new File(dirs[i], pCmd + ".bat");
+                cmd = new File(dir, pCmd + ".bat");
                 if (cmd.exists()) {
                     return cmd.getCanonicalPath();
                 }
             } else {
-                File cmd = new File(dirs[i], pCmd);
+                File cmd = new File(dir, pCmd);
                 if (cmd.exists()) {
                     return cmd.getCanonicalPath();
                 }
