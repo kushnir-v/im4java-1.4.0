@@ -67,6 +67,14 @@ public class ProcessStarter {
     private static String iGlobalSearchPath = null;
 
     //////////////////////////////////////////////////////////////////////////////
+
+    /**
+     Static global search path for executables.
+     */
+
+    private static String ghostscriptSearchPath = null;
+
+    //////////////////////////////////////////////////////////////////////////////
     /**
      The value of the global process-id counter.
      */
@@ -172,6 +180,16 @@ public class ProcessStarter {
     //////////////////////////////////////////////////////////////////////////////
 
     /**
+     Query the Ghostscript (static) search path.
+     */
+
+    public static String getGhostscriptSearchPath() {
+        return ghostscriptSearchPath;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////
+
+    /**
      Set the global (static) search path. You can override this search path
      on a per object basis.
 
@@ -180,6 +198,19 @@ public class ProcessStarter {
 
     public static void setGlobalSearchPath(String pGlobalSearchPath) {
         iGlobalSearchPath = pGlobalSearchPath;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////
+
+    /**
+     Set the global (static) search path. You can override this search path
+     on a per object basis.
+
+     @param pGhostscriptSearchPath the global search path
+     */
+
+    public static void setGhostscriptSearchPath(String pGhostscriptSearchPath) {
+        ghostscriptSearchPath = pGhostscriptSearchPath;
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -431,6 +462,7 @@ public class ProcessStarter {
 
         Map<String, String> env = builder.environment();
         env.put("PATH", getGlobalSearchPath());
+        env.put("MAGICK_GHOSTSCRIPT_PATH", getGhostscriptSearchPath());
 
         return builder.start();
     }
