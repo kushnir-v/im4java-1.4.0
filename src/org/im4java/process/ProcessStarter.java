@@ -462,7 +462,9 @@ public class ProcessStarter {
 
         Map<String, String> env = builder.environment();
         env.put("PATH", getGlobalSearchPath());
-        env.put("MAGICK_GHOSTSCRIPT_PATH", getGhostscriptSearchPath());
+        if (getGhostscriptSearchPath() != null) {
+            env.put("MAGICK_GHOSTSCRIPT_PATH", getGhostscriptSearchPath());
+        }
 
         return builder.start();
     }
